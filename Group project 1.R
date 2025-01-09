@@ -1,3 +1,56 @@
+#question1 with separation of plotting number of sti and number of sti to calculate payoff + 1.2 easier 
+
+S0 <- 150        
+r <- 0.04       
+sigma <- 0.3    
+T <- 1           
+m <- 365
+dt <- T / m      
+K <- 150         
+n_sim <- 10000   
+
+payoffs <- numeric(n_sim) 
+
+for (j in 1:n_sim) {
+  Z <- rnorm(m, mean = 0, sd = 1)  
+  S_Ti <- numeric(m)
+  S_Ti[1] <- S0
+  
+  for (i in 2:m) {
+    S_Ti[i] <- S_Ti[i-1] * exp((r - (sigma^2) / 2) * dt + sigma * sqrt(dt) * Z[i-1])
+  }
+  
+  S_Ti_12 <- S_Ti[seq(1, m, length.out = 12)]
+  
+  A_T <- prod(S_Ti_12)^(1 / 12)
+  
+  payoffs[j] <- max(A_T - K, 0)
+}
+
+V_0 <- mean(payoffs) * exp(-r * T)
+V_0
+
+plot(1:m, S_Ti, type = "l", col = "blue",
+     main = "Example of one possible trajectory of S_Ti",
+     xlab = "Périods", ylab = "Price ($)")
+points_indices <- seq(20, m, length.out = 12)
+points_values <- S_Ti[points_indices]
+points(points_indices, points_values, col = "red", pch = 20)
+
+
+#1.2
+d1_value <- 1/(0.3)*(log(1) + (r + (sigma^2) / 2) * T) 
+d2_value = 1/(0.3)*(log(1) + (r - (sigma^2) / 2) * T)
+V0_euro = 150*pnorm(d1_value)- 150*exp(-0.04)*pnorm(d2_value)   
+
+
+
+#---------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
 #1.1
 S0 <- 150        
 r <- 0.04       
